@@ -233,7 +233,7 @@ static int32_t read_decimal_token (ipv6_reader_state_t* state)
     const char* ep = cp + state->token_len;
     int32_t accumulate = 0;
     int32_t digit;
-    while (*cp && cp < ep) {
+    while (cp < ep && *cp) {
         switch (*cp) {
             case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
                 digit = *cp - '0';
@@ -262,7 +262,7 @@ static int32_t read_hexidecimal_token (ipv6_reader_state_t* state)
     const char* ep = cp + state->token_len;
     int32_t accumulate = 0;
     int32_t digit;
-    while (*cp && cp < ep) {
+    while (cp < ep && *cp) {
         switch (*cp) {
             case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
                 digit = (*cp - '0');
@@ -736,7 +736,7 @@ bool IPV6_API_DEF(ipv6_from_str_diag) (
     state.input_bytes = (int32_t)input_bytes;
     state.address_full = out;
 
-    while (*cp && cp < ep) {
+    while (cp < ep && *cp) {
         IPV6_TRACE(
             "  * parse state: %s, cp: '%c' (%02x) position: %d, flags: %08x\n",
             state_str(state.current),
