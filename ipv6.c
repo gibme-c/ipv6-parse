@@ -28,6 +28,10 @@
     snprintf(buffer, bytes, format, __VA_ARGS__)
 #endif
 
+
+// Original core address RFC 3513: https://tools.ietf.org/html/rfc3513
+// Replacement address RFC 4291: https://tools.ietf.org/html/rfc4291
+
 //
 // Distinct states of parsing an address
 //
@@ -715,7 +719,7 @@ bool IPV6_API_DEF(ipv6_from_str_diag) (
         return false;
     }
 
-    if (input_bytes > 66) {
+    if (input_bytes > IPV6_STRING_SIZE) {
         ipv6_error(&state, IPV6_DIAG_STRING_SIZE_EXCEEDED,
             "Input string size exceeded");
         return false;
@@ -897,6 +901,9 @@ size_t IPV6_API_DEF(ipv6_to_str) (
     char *output,
     size_t output_bytes)
 {
+    char token[IPV4_STRING_SIZE] = {0,};
+    const uint16_t *components;
+
     if (!in || !output) {
         return 0;
     }
@@ -907,12 +914,12 @@ size_t IPV6_API_DEF(ipv6_to_str) (
 
     *output = '\0';
 
-    const uint16_t* components = in->address.components;
+    components = in->address.components;
     char* wp = output; // write pointer
     const char* ep = output + output_bytes - 1; // end pointer with one octet for nul
-    char token[22] = {0};
 
-    // If the address is an IPv4 compatible address shortcut the IPv6 rules and
+
+    // If the address is an IPv4 compatible address shortcut the IPv6 rules and 
     // print an address or address:port
     if (in->flags & IPV6_FLAG_IPV4_COMPAT) {
         int32_t n = platform_snprintf(token, sizeof(token), "%d.%d.%d.%d",
